@@ -8,7 +8,7 @@ CDC pipelines fail quietly when schema changes are treated as "someone else's pr
 
 ## Architecture
 
-The V1 implementation is intentionally compact and transparent:
+The implementation is intentionally compact and transparent:
 
 - versioned JSON contracts simulate source schema evolution
 - a compatibility engine compares the current and proposed contracts field by field
@@ -32,7 +32,7 @@ flowchart LR
 
 ## Contract Example
 
-The repo proves contract governance by comparing a current schema against a proposed one before downstream consumers are surprised.
+The repo demonstrates contract governance by comparing a current schema against a proposed one before downstream consumers are surprised.
 
 Current contract example:
 
@@ -63,11 +63,11 @@ That change is breaking because a required field disappears and `order_total` na
 
 ## Tradeoffs
 
-This V1 makes three deliberate tradeoffs:
+This implementation makes three deliberate tradeoffs:
 
 1. Contracts are modeled as local JSON files instead of a full schema registry so the compatibility logic stays runnable without external infrastructure.
-2. The repo simulates a few representative change patterns instead of a huge catalog because the point is to prove contract discipline and blast-radius thinking first.
-3. The lineage model is static metadata for V1 rather than a live catalog integration so the downstream impact stays explicit and inspectable.
+2. The repo simulates a few representative change patterns instead of a huge catalog because the point is to keep contract discipline and blast-radius thinking explicit.
+3. The lineage model is static metadata rather than a live catalog integration so the downstream impact stays explicit and inspectable.
 
 ## Repo Layout
 
@@ -138,7 +138,7 @@ make verify
 
 ## Validation
 
-The V1 repo currently verifies:
+The repo currently verifies:
 
 - additive nullable fields are treated as compatible
 - removing required fields is treated as breaking
@@ -166,12 +166,12 @@ Local quality gates:
 
 ## Current Capabilities
 
-The V1 repo demonstrates:
+The repo demonstrates:
 
 - versioned CDC contract comparison
 - field-level compatibility classification
 - lineage-aware blast-radius reporting
 - exception-aware policy handling with auditable temporary waivers
 - waiver-expiry alerts in both the JSON report and Markdown break alert
-- machine-readable and reviewer-facing alert artifacts
+- machine-readable and operator-facing alert artifacts
 - FastAPI surface for the demo compatibility report
