@@ -1,0 +1,7 @@
+{
+  "customer_tier": ["fraud_feature_store", "customer_health_mart"],
+  "order_total": ["daily_revenue_dashboard", "fraud_feature_store"],
+  "event_ts": ["freshness_monitor"],
+  "promotion_code": ["campaign_attribution_model"],
+  "ingested_by": []
+}

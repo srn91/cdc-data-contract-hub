@@ -1,0 +1,11 @@
+{
+  "name": "order_events_v2_additive_nullable",
+  "fields": [
+    {"name": "event_id", "type": "string", "nullable": false},
+    {"name": "order_id", "type": "string", "nullable": false},
+    {"name": "customer_tier", "type": "string", "nullable": false},
+    {"name": "order_total", "type": "double", "nullable": false},
+    {"name": "event_ts", "type": "timestamp", "nullable": false},
+    {"name": "promotion_code", "type": "string", "nullable": true}
+  ]
+}

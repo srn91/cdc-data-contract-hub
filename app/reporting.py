@@ -1,0 +1,47 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from app.config import GENERATED_DIR
+from app.models import CompatibilityReport
+
+
+def _portable(path: Path) -> str:
+    cwd = Path.cwd()
+    try:
+        return str(path.relative_to(cwd))
+    except ValueError:
+        return str(path)
+
+
+def render_markdown(report: CompatibilityReport) -> str:
+    findings = ["None"] if not report.findings else [
+        f"- `{finding.status}` `{finding.field_name}`: {finding.reason}. Impacted consumers: {', '.join(finding.impacted_consumers) or 'none'}."
+        for finding in report.findings
+    ]
+    return "\n".join(
+        [
+            f"# CDC Contract Alert: {report.proposed_contract}",
+            "",
+            f"Overall status: `{report.overall_status}`",
+            "",
+            "## Summary",
+            "",
+            report.summary,
+            "",
+            "## Findings",
+            "",
+            *findings,
+            "",
+        ]
+    )
+
+
+def write_outputs(report: CompatibilityReport) -> tuple[str, str]:
+    GENERATED_DIR.mkdir(parents=True, exist_ok=True)
+    json_path = GENERATED_DIR / "compatibility_report.json"
+    markdown_path = GENERATED_DIR / "break_alert.md"
+    json_path.write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
+    markdown_path.write_text(render_markdown(report), encoding="utf-8")
+    return _portable(json_path), _portable(markdown_path)

@@ -1,0 +1,10 @@
+{
+  "name": "order_events_v2_breaking",
+  "fields": [
+    {"name": "event_id", "type": "string", "nullable": false},
+    {"name": "order_id", "type": "string", "nullable": false},
+    {"name": "order_total", "type": "int", "nullable": false},
+    {"name": "event_ts", "type": "timestamp", "nullable": false},
+    {"name": "ingested_by", "type": "string", "nullable": false}
+  ]
+}
