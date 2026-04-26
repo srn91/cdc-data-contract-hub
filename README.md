@@ -27,6 +27,37 @@ flowchart LR
     F --> H["FastAPI demo endpoint"]
 ```
 
+## Contract Example
+
+The repo proves contract governance by comparing a current schema against a proposed one before downstream consumers are surprised.
+
+Current contract example:
+
+```json
+{
+  "name": "order_events_v1",
+  "fields": [
+    { "name": "order_id", "type": "string", "nullable": false },
+    { "name": "customer_tier", "type": "string", "nullable": false },
+    { "name": "order_total", "type": "double", "nullable": false }
+  ]
+}
+```
+
+Proposed breaking example:
+
+```json
+{
+  "name": "order_events_v2_breaking",
+  "fields": [
+    { "name": "order_id", "type": "string", "nullable": false },
+    { "name": "order_total", "type": "int", "nullable": false }
+  ]
+}
+```
+
+That change is breaking because a required field disappears and `order_total` narrows from `double` to `int`.
+
 ## Tradeoffs
 
 This V1 makes three deliberate tradeoffs:
@@ -123,6 +154,10 @@ The V1 repo demonstrates:
 - lineage-aware blast-radius reporting
 - machine-readable and reviewer-facing alert artifacts
 - FastAPI surface for the demo compatibility report
+
+## What This Proves
+
+This repo proves that CDC governance can be explicit, local, and inspectable. It shows how to classify schema changes, attach blast-radius context, and produce a reviewer-ready alert before a breaking change reaches consumers.
 
 ## Next Steps
 
