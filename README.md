@@ -120,6 +120,13 @@ Useful endpoints:
 make verify
 ```
 
+## Hosted Deployment
+
+- Live URL: [cdc-data-contract-hub.onrender.com](https://cdc-data-contract-hub.onrender.com)
+- Open this first: [`/demo/report`](https://cdc-data-contract-hub.onrender.com/demo/report)
+- Browser smoke result: the live report rendered immediately in-browser and returned the breaking-change classification plus impacted downstream consumers.
+- Render config: branch `main`, auto-deploy on commit, runtime `python`, build command `pip install -r requirements.txt`, start command `uvicorn app.main:app --host 0.0.0.0 --port $PORT`, health check path `/health`
+
 ## Validation
 
 The V1 repo currently verifies:
