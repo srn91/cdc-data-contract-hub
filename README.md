@@ -56,7 +56,7 @@ cdc-data-contract-hub/
 ### Install Dependencies
 
 ```bash
-git clone git@github.com:srn91/cdc-data-contract-hub.git
+git clone https://github.com/srn91/cdc-data-contract-hub.git
 cd cdc-data-contract-hub
 python3 -m pip install -r requirements.txt
 ```
