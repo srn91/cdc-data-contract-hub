@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from app.contracts import compare_contracts, load_contract, load_lineage
+from app.contracts import compare_contracts, load_contract, load_exceptions, load_lineage
 
 
 CURRENT_CONTRACT = "order_events_v1.json"
 PROPOSED_CONTRACT = "order_events_v2_breaking.json"
+EXCEPTIONS_FILE = "order_events_v2_breaking_exceptions.json"
 
 app = FastAPI(
     title="CDC Data Contract Hub",
@@ -20,6 +21,7 @@ def demo_report() -> dict[str, object]:
         current=load_contract(CURRENT_CONTRACT),
         proposed=load_contract(PROPOSED_CONTRACT),
         lineage=load_lineage(),
+        exceptions=load_exceptions(EXCEPTIONS_FILE),
     )
     return report.to_dict()
 

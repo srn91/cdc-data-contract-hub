@@ -13,6 +13,7 @@ The V1 implementation is intentionally compact and transparent:
 - versioned JSON contracts simulate source schema evolution
 - a compatibility engine compares the current and proposed contracts field by field
 - lineage metadata maps changed fields to downstream consumers
+- approved temporary exceptions can downgrade a finding while preserving the audit trail
 - a reporting layer emits both a machine-readable compatibility report and a Markdown break alert
 - a FastAPI endpoint serves the same demo report that the CLI produces
 
@@ -22,8 +23,9 @@ flowchart LR
     B["Proposed contract JSON"] --> C
     C --> D["Change classification"]
     D --> E["Lineage impact lookup"]
-    E --> F["compatibility_report.json"]
-    E --> G["break_alert.md"]
+    E --> X["Exception policy lookup"]
+    X --> F["compatibility_report.json"]
+    X --> G["break_alert.md"]
     F --> H["FastAPI demo endpoint"]
 ```
 
@@ -103,6 +105,10 @@ That writes:
 - `generated/compatibility_report.json`
 - `generated/break_alert.md`
 
+The demo report now also loads:
+
+- `exceptions/order_events_v2_breaking_exceptions.json`
+
 ### Start the API
 
 ```bash
@@ -143,6 +149,7 @@ Current demo report snapshot:
 - proposed contract: `order_events_v2_breaking`
 - overall status: `breaking`
 - breaking reasons: removal of `customer_tier`, narrowing `order_total` from `double` to `int`
+- approved exception: `exc-order-total-type-narrowing` temporarily downgrades the `order_total` narrowing from blocking to warning with ticket and expiry metadata
 - impacted consumers: `daily_revenue_dashboard`, `fraud_feature_store`, `customer_health_mart`
 
 Local quality gates:
@@ -159,6 +166,7 @@ The V1 repo demonstrates:
 - versioned CDC contract comparison
 - field-level compatibility classification
 - lineage-aware blast-radius reporting
+- exception-aware policy handling with auditable temporary waivers
 - machine-readable and reviewer-facing alert artifacts
 - FastAPI surface for the demo compatibility report
 
@@ -174,4 +182,4 @@ Realistic follow-up work for the next milestone:
 2. ingest Avro or Protobuf schemas instead of only JSON contract specs
 3. integrate with a registry or migration approval workflow
 4. add historical contract diff storage and trend reporting
-5. support policy exceptions with audit trails
+5. surface exception-expiry alerts before waivers lapse

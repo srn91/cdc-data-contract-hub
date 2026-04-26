@@ -15,3 +15,4 @@ def test_demo_report_endpoint_returns_breaking_report() -> None:
     body = response.json()
     assert body["overall_status"] == "breaking"
     assert body["current_contract"] == "order_events_v1"
+    assert body["exceptions_applied"][0]["exception_id"] == "exc-order-total-type-narrowing"

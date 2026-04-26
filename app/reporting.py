@@ -17,8 +17,25 @@ def _portable(path: Path) -> str:
 
 def render_markdown(report: CompatibilityReport) -> str:
     findings = ["None"] if not report.findings else [
-        f"- `{finding.status}` `{finding.field_name}`: {finding.reason}. Impacted consumers: {', '.join(finding.impacted_consumers) or 'none'}."
+        (
+            f"- `actual={finding.status}` `effective={finding.effective_status}` `{finding.field_name}`: "
+            f"{finding.reason}. Impacted consumers: {', '.join(finding.impacted_consumers) or 'none'}."
+            + (
+                f" Exception `{finding.exception_id}` approved by {finding.exception_approved_by}"
+                f" under ticket `{finding.exception_ticket}` until {finding.exception_expires_on}."
+                if finding.exception_id
+                else ""
+            )
+        )
         for finding in report.findings
+    ]
+    exceptions = ["None"] if not report.exceptions_applied else [
+        (
+            f"- `{exception.exception_id}` on `{exception.field_name}` "
+            f"for `{exception.status}` changes, approved by {exception.approved_by}, "
+            f"ticket `{exception.ticket}`, expires {exception.expires_on}: {exception.rationale}"
+        )
+        for exception in report.exceptions_applied
     ]
     return "\n".join(
         [
@@ -33,6 +50,10 @@ def render_markdown(report: CompatibilityReport) -> str:
             "## Findings",
             "",
             *findings,
+            "",
+            "## Approved Temporary Exceptions",
+            "",
+            *exceptions,
             "",
         ]
     )

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from app.contracts import compare_contracts, load_contract, load_lineage
-from app.main import CURRENT_CONTRACT, PROPOSED_CONTRACT
+from app.contracts import compare_contracts, load_contract, load_exceptions, load_lineage
+from app.main import CURRENT_CONTRACT, EXCEPTIONS_FILE, PROPOSED_CONTRACT
 from app.reporting import write_outputs
 
 
@@ -10,6 +10,7 @@ def build_demo_report():
         current=load_contract(CURRENT_CONTRACT),
         proposed=load_contract(PROPOSED_CONTRACT),
         lineage=load_lineage(),
+        exceptions=load_exceptions(EXCEPTIONS_FILE),
     )
 
 

@@ -24,8 +24,24 @@ class ContractSpec:
 class ChangeFinding:
     field_name: str
     status: CompatibilityStatus
+    effective_status: CompatibilityStatus
     reason: str
     impacted_consumers: list[str]
+    exception_id: str | None = None
+    exception_ticket: str | None = None
+    exception_approved_by: str | None = None
+    exception_expires_on: str | None = None
+
+
+@dataclass(frozen=True)
+class PolicyException:
+    exception_id: str
+    field_name: str
+    status: CompatibilityStatus
+    approved_by: str
+    ticket: str
+    rationale: str
+    expires_on: str
 
 
 @dataclass(frozen=True)
@@ -34,6 +50,7 @@ class CompatibilityReport:
     proposed_contract: str
     overall_status: CompatibilityStatus
     findings: list[ChangeFinding]
+    exceptions_applied: list[PolicyException]
     summary: str
 
     def to_dict(self) -> dict[str, object]:
