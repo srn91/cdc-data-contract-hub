@@ -170,13 +170,9 @@ The V1 repo demonstrates:
 - machine-readable and reviewer-facing alert artifacts
 - FastAPI surface for the demo compatibility report
 
-## What This Proves
+## Future Expansion
 
-This repo proves that CDC governance can be explicit, local, and inspectable. It shows how to classify schema changes, attach blast-radius context, and produce a reviewer-ready alert before a breaking change reaches consumers.
-
-## Next Steps
-
-Realistic follow-up work for the next milestone:
+Possible follow-on work outside the current shipped scope:
 
 1. add forward- and backward-compatibility modes by consumer type
 2. ingest Avro or Protobuf schemas instead of only JSON contract specs
