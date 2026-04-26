@@ -5,6 +5,7 @@ from typing import Literal
 
 
 CompatibilityStatus = Literal["compatible", "warning", "breaking"]
+AlertSeverity = Literal["expired", "expiring_soon"]
 
 
 @dataclass(frozen=True)
@@ -45,12 +46,24 @@ class PolicyException:
 
 
 @dataclass(frozen=True)
+class ExceptionAlert:
+    exception_id: str
+    field_name: str
+    severity: AlertSeverity
+    days_until_expiry: int
+    expires_on: str
+    message: str
+    impacted_consumers: list[str]
+
+
+@dataclass(frozen=True)
 class CompatibilityReport:
     current_contract: str
     proposed_contract: str
     overall_status: CompatibilityStatus
     findings: list[ChangeFinding]
     exceptions_applied: list[PolicyException]
+    exception_alerts: list[ExceptionAlert]
     summary: str
 
     def to_dict(self) -> dict[str, object]:

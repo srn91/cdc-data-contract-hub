@@ -6,6 +6,6 @@
     "approved_by": "data-governance-council",
     "ticket": "CDC-142",
     "rationale": "Temporary waiver while the revenue mart migrates from double parsing to integer-safe ingestion.",
-    "expires_on": "2026-06-30"
+    "expires_on": "2026-05-10"
   }
 ]

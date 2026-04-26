@@ -37,6 +37,13 @@ def render_markdown(report: CompatibilityReport) -> str:
         )
         for exception in report.exceptions_applied
     ]
+    alerts = ["None"] if not report.exception_alerts else [
+        (
+            f"- `{alert.severity}` `{alert.exception_id}` on `{alert.field_name}`: "
+            f"{alert.message} Impacted consumers: {', '.join(alert.impacted_consumers) or 'none'}."
+        )
+        for alert in report.exception_alerts
+    ]
     return "\n".join(
         [
             f"# CDC Contract Alert: {report.proposed_contract}",
@@ -54,6 +61,10 @@ def render_markdown(report: CompatibilityReport) -> str:
             "## Approved Temporary Exceptions",
             "",
             *exceptions,
+            "",
+            "## Exception Expiry Alerts",
+            "",
+            *alerts,
             "",
         ]
     )

@@ -14,6 +14,7 @@ The V1 implementation is intentionally compact and transparent:
 - a compatibility engine compares the current and proposed contracts field by field
 - lineage metadata maps changed fields to downstream consumers
 - approved temporary exceptions can downgrade a finding while preserving the audit trail
+- exception-expiry alerts warn when a temporary waiver is close to lapsing or already expired
 - a reporting layer emits both a machine-readable compatibility report and a Markdown break alert
 - a FastAPI endpoint serves the same demo report that the CLI produces
 
@@ -109,6 +110,8 @@ The demo report now also loads:
 
 - `exceptions/order_events_v2_breaking_exceptions.json`
 
+That waiver file is part of the shipped workflow: the report surfaces both the downgrade metadata and any expiry alerts that need governance follow-up before the waiver lapses.
+
 ### Start the API
 
 ```bash
@@ -141,6 +144,7 @@ The V1 repo currently verifies:
 - removing required fields is treated as breaking
 - incompatible type changes are surfaced explicitly
 - downstream lineage impact is attached to each breaking change
+- temporary waivers raise alerts when they are within the alert window or already expired
 - CLI and API return the same report for the demo scenario
 
 Current demo report snapshot:
@@ -150,6 +154,7 @@ Current demo report snapshot:
 - overall status: `breaking`
 - breaking reasons: removal of `customer_tier`, narrowing `order_total` from `double` to `int`
 - approved exception: `exc-order-total-type-narrowing` temporarily downgrades the `order_total` narrowing from blocking to warning with ticket and expiry metadata
+- expiry alert: `exc-order-total-type-narrowing` is surfaced as `expiring_soon` so the waiver can be renewed or removed before `2026-05-10`
 - impacted consumers: `daily_revenue_dashboard`, `fraud_feature_store`, `customer_health_mart`
 
 Local quality gates:
@@ -167,6 +172,7 @@ The V1 repo demonstrates:
 - field-level compatibility classification
 - lineage-aware blast-radius reporting
 - exception-aware policy handling with auditable temporary waivers
+- waiver-expiry alerts in both the JSON report and Markdown break alert
 - machine-readable and reviewer-facing alert artifacts
 - FastAPI surface for the demo compatibility report
 
@@ -178,4 +184,3 @@ Possible follow-on work outside the current shipped scope:
 2. ingest Avro or Protobuf schemas instead of only JSON contract specs
 3. integrate with a registry or migration approval workflow
 4. add historical contract diff storage and trend reporting
-5. surface exception-expiry alerts before waivers lapse

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 
 from app.config import CONTRACTS_DIR, EXCEPTIONS_DIR, LINEAGE_PATH
 from app.models import (
@@ -8,6 +9,7 @@ from app.models import (
     CompatibilityReport,
     CompatibilityStatus,
     ContractSpec,
+    ExceptionAlert,
     FieldSpec,
     PolicyException,
 )
@@ -68,16 +70,61 @@ def _finding(
     )
 
 
+def _build_exception_alerts(
+    exceptions: list[PolicyException],
+    findings: list[ChangeFinding],
+    *,
+    as_of_date: date,
+    alert_window_days: int,
+) -> list[ExceptionAlert]:
+    impacted_by_exception = {
+        finding.exception_id: finding.impacted_consumers
+        for finding in findings
+        if finding.exception_id is not None
+    }
+    alerts: list[ExceptionAlert] = []
+    for exception in exceptions:
+        expires_on = date.fromisoformat(exception.expires_on)
+        days_until_expiry = (expires_on - as_of_date).days
+        if days_until_expiry > alert_window_days:
+            continue
+        severity = "expired" if days_until_expiry < 0 else "expiring_soon"
+        timeframe = (
+            f"expired {-days_until_expiry} day(s) ago"
+            if days_until_expiry < 0
+            else f"expires in {days_until_expiry} day(s)"
+        )
+        alerts.append(
+            ExceptionAlert(
+                exception_id=exception.exception_id,
+                field_name=exception.field_name,
+                severity=severity,
+                days_until_expiry=days_until_expiry,
+                expires_on=exception.expires_on,
+                message=(
+                    f"Temporary waiver {exception.exception_id} for {exception.field_name} "
+                    f"{timeframe}; renew or remove it before the contract change ships."
+                ),
+                impacted_consumers=impacted_by_exception.get(exception.exception_id, []),
+            )
+        )
+    return sorted(alerts, key=lambda alert: (alert.days_until_expiry, alert.exception_id))
+
+
 def compare_contracts(
     current: ContractSpec,
     proposed: ContractSpec,
     lineage: dict[str, list[str]],
     exceptions: list[PolicyException] | None = None,
+    *,
+    as_of_date: date | None = None,
+    alert_window_days: int = 30,
 ) -> CompatibilityReport:
     current_fields = {field.name: field for field in current.fields}
     proposed_fields = {field.name: field for field in proposed.fields}
     findings: list[ChangeFinding] = []
     configured_exceptions = exceptions or []
+    effective_as_of_date = as_of_date or date.today()
 
     for field_name, current_field in current_fields.items():
         proposed_field = proposed_fields.get(field_name)
@@ -142,10 +189,17 @@ def compare_contracts(
         for exception in configured_exceptions
         if any(finding.exception_id == exception.exception_id for finding in findings)
     ]
+    exception_alerts = _build_exception_alerts(
+        exceptions_applied,
+        findings,
+        as_of_date=effective_as_of_date,
+        alert_window_days=alert_window_days,
+    )
 
     summary = (
         f"Proposed contract {proposed.name} is {overall_status} against {current.name}. "
-        f"Detected {len(findings)} classified change(s) with {len(exceptions_applied)} approved exception(s)."
+        f"Detected {len(findings)} classified change(s) with {len(exceptions_applied)} approved exception(s)"
+        f" and {len(exception_alerts)} expiry alert(s)."
     )
 
     return CompatibilityReport(
@@ -158,5 +212,6 @@ def compare_contracts(
             reverse=True,
         ),
         exceptions_applied=exceptions_applied,
+        exception_alerts=exception_alerts,
         summary=summary,
     )
