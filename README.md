@@ -2,9 +2,9 @@
 
 A local-first CDC contract workflow that compares schema versions, classifies compatibility risk, attaches downstream lineage context, and emits break alerts before a source change reaches consumers.
 
-## Proof Snapshot
+## Results
 
-| Signal | Current evidence |
+| Area | Details |
 |---|---|
 | Breaking-change detection | Demo comparison flags `order_events_v2_breaking` as `breaking` because `customer_tier` is removed and `order_total` narrows from `double` to `int`. |
 | Blast-radius reporting | The generated report attaches impacted consumers: `daily_revenue_dashboard`, `fraud_feature_store`, and `customer_health_mart`. |
@@ -12,7 +12,7 @@ A local-first CDC contract workflow that compares schema versions, classifies co
 | Expiry control | Waiver status is surfaced as `expiring_soon` so contract exceptions do not become invisible permanent risk. |
 | API parity | CLI and FastAPI `/demo/report` return the same compatibility report for the demo scenario. |
 
-## What This Proves
+## Overview
 
 - Data contracts are enforced before schema changes break dashboards, feature stores, or downstream marts.
 - Schema compatibility, lineage, exception policy, and alerting are handled together rather than as separate documents.
