@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+
 from fastapi import FastAPI
 
 from app.contracts import compare_contracts, load_contract, load_exceptions, load_lineage
@@ -22,6 +24,7 @@ def demo_report() -> dict[str, object]:
         proposed=load_contract(PROPOSED_CONTRACT),
         lineage=load_lineage(),
         exceptions=load_exceptions(EXCEPTIONS_FILE),
+        as_of_date=date(2026, 4, 26),
     )
     return report.to_dict()
 
@@ -29,6 +32,24 @@ def demo_report() -> dict[str, object]:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/")
+def index() -> dict[str, object]:
+    return {
+        "project": "cdc-data-contract-hub",
+        "status": "ready",
+        "endpoints": {
+            "health": "/health",
+            "demo_report": "/demo/report",
+            "docs": "/docs",
+        },
+        "scenario": {
+            "current_contract": CURRENT_CONTRACT,
+            "proposed_contract": PROPOSED_CONTRACT,
+            "exceptions_file": EXCEPTIONS_FILE,
+        },
+    }
 
 
 @app.get("/demo/report")

@@ -16,3 +16,13 @@ def test_demo_report_endpoint_returns_breaking_report() -> None:
     assert body["exceptions_applied"][0]["exception_id"] == "exc-order-total-type-narrowing"
     assert body["exception_alerts"][0]["severity"] == "expiring_soon"
     assert body["exception_alerts"][0]["days_until_expiry"] == 14
+
+
+def test_root_endpoint_lists_demo_paths() -> None:
+    client = TestClient(main.app)
+    response = client.get("/")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["project"] == "cdc-data-contract-hub"
+    assert body["endpoints"]["demo_report"] == "/demo/report"
