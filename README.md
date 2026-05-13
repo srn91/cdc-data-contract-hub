@@ -2,6 +2,22 @@
 
 A local-first CDC contract workflow that compares schema versions, classifies compatibility risk, attaches downstream lineage context, and emits break alerts before a source change reaches consumers.
 
+## Proof Snapshot
+
+| Signal | Current evidence |
+|---|---|
+| Breaking-change detection | Demo comparison flags `order_events_v2_breaking` as `breaking` because `customer_tier` is removed and `order_total` narrows from `double` to `int`. |
+| Blast-radius reporting | The generated report attaches impacted consumers: `daily_revenue_dashboard`, `fraud_feature_store`, and `customer_health_mart`. |
+| Governance path | Temporary exception `exc-order-total-type-narrowing` downgrades one finding with ticket and expiry metadata while preserving the audit trail. |
+| Expiry control | Waiver status is surfaced as `expiring_soon` so contract exceptions do not become invisible permanent risk. |
+| API parity | CLI and FastAPI `/demo/report` return the same compatibility report for the demo scenario. |
+
+## What This Proves
+
+- Data contracts are enforced before schema changes break dashboards, feature stores, or downstream marts.
+- Schema compatibility, lineage, exception policy, and alerting are handled together rather than as separate documents.
+- The repo is directly relevant to CDC, data governance, lakehouse reliability, analytics engineering, and AI data platform roles.
+
 ## Problem
 
 CDC pipelines fail quietly when schema changes are treated as "someone else's problem." Real data platform teams need a repeatable way to compare source contracts, decide whether a change is safe, and understand which downstream assets will break before the change is promoted. This repo focuses on that pre-break workflow.
