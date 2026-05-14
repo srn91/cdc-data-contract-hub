@@ -23,6 +23,6 @@ def test_root_endpoint_lists_demo_paths() -> None:
     response = client.get("/")
 
     assert response.status_code == 200
-    body = response.json()
-    assert body["project"] == "cdc-data-contract-hub"
-    assert body["endpoints"]["demo_report"] == "/demo/report"
+    assert "text/html" in response.headers["content-type"]
+    assert "CDC Data Contract Hub" in response.text
+    assert "/demo/report" in response.text

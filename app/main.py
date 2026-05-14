@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date
 
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 from app.contracts import compare_contracts, load_contract, load_exceptions, load_lineage
 
@@ -34,22 +35,24 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/")
-def index() -> dict[str, object]:
-    return {
-        "project": "cdc-data-contract-hub",
-        "status": "ready",
-        "endpoints": {
-            "health": "/health",
-            "demo_report": "/demo/report",
-            "docs": "/docs",
-        },
-        "scenario": {
-            "current_contract": CURRENT_CONTRACT,
-            "proposed_contract": PROPOSED_CONTRACT,
-            "exceptions_file": EXCEPTIONS_FILE,
-        },
-    }
+@app.get("/", response_class=HTMLResponse)
+def index() -> str:
+    return f"""<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CDC Data Contract Hub</title>
+<style>body{{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;max-width:860px;margin:48px auto;padding:0 24px;line-height:1.5;color:#111}}a{{color:#0645ad}}code{{background:#f3f4f6;padding:2px 5px;border-radius:4px}}</style></head>
+<body>
+<h1>CDC Data Contract Hub</h1>
+<p>Schema compatibility workflow for CDC contract changes, downstream lineage, temporary exceptions, and break alerts.</p>
+<ul><li>Current contract: <code>{CURRENT_CONTRACT}</code></li><li>Proposed contract: <code>{PROPOSED_CONTRACT}</code></li></ul>
+<h2>Open endpoints</h2>
+<ul>
+<li><a href="/demo/report">Contract comparison report</a></li>
+<li><a href="/health">Health check</a></li>
+<li><a href="/docs">API docs</a></li>
+</ul>
+</body></html>"""
 
 
 @app.get("/demo/report")
